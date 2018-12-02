@@ -1,8 +1,9 @@
 import {YmContext} from "../sys/base";
 import {ConsoleLineAlignment, InputRequestType} from "erats";
-import {matchInput, MessageWhenFail} from "../sys/input";
+import {exitNever, failMessage, InputMatch, matchInput} from "../sys/input";
 import {newGame} from "./newgame";
 import {loadGame} from "./loadGame";
+import {reqInt} from "../sys/inputReq";
 
 export async function systemTitle(ctx: YmContext) {
 
@@ -20,23 +21,12 @@ export async function systemTitle(ctx: YmContext) {
 
     await matchInput(
         ctx,
-        {
-            type: InputRequestType.Int,
-            expire: null,
-            data: null,
-        },
-        new MessageWhenFail("잘못된 입력입니다"),
+        reqInt(),
+        failMessage("잘못된 입력입니다"),
+        exitNever(),
         [
-            {
-                text: "[0] 힘세고 강한 시작",
-                value: 0,
-                func: newGame,
-            },
-            {
-                text: "[1] 불러오기",
-                value: 1,
-                func: loadGame,
-            }
+            new InputMatch("[0] 힘세고 강한 시작", newGame),
+            new InputMatch("[1] 불러오기", loadGame),
         ]
     );
 }
