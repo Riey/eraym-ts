@@ -1,5 +1,8 @@
 import {YmContext} from "../sys/base";
 import {ConsoleLineAlignment, InputRequestType} from "erats";
+import {matchInput, MessageWhenFail} from "../sys/input";
+import {newGame} from "./newgame";
+import {loadGame} from "./loadGame";
 
 export async function systemTitle(ctx: YmContext) {
 
@@ -15,16 +18,25 @@ export async function systemTitle(ctx: YmContext) {
     ctx.console.setLineAlignment(ConsoleLineAlignment.Left);
     ctx.console.drawLine();
 
-    ctx.console.printBtn("[0] 힘세고 강한 시작", 0);
-    ctx.console.newLine();
-    ctx.console.printBtn("[1] 불러오기", 1);
-    ctx.console.newLine();
-
-    const input = await ctx.console.wait({
-        type: InputRequestType.Int,
-        expire: null,
-        data: null,
-    }) as number;
-
-    ctx.console.printLine(`Enter: ${input}`);
+    await matchInput(
+        ctx,
+        {
+            type: InputRequestType.Int,
+            expire: null,
+            data: null,
+        },
+        new MessageWhenFail("잘못된 입력입니다"),
+        [
+            {
+                text: "[0] 힘세고 강한 시작",
+                value: 0,
+                func: newGame,
+            },
+            {
+                text: "[1] 불러오기",
+                value: 1,
+                func: loadGame,
+            }
+        ]
+    );
 }
