@@ -1,5 +1,5 @@
-import {GameBase} from "./gameBase";
 import {Character} from "./character";
+import {GameBase} from "./gameBase";
 
 export interface Money {
     current: number;

@@ -1,4 +1,4 @@
-import saveAs from 'file-saver'
+import saveAs from "file-saver";
 import {YmContext} from "./base";
 import {VariableData} from "./variable";
 
@@ -15,7 +15,7 @@ export class WebSaveManager implements SaveManager {
     savs: Map<number, VariableData>;
 
     constructor() {
-        this.savs = JSON.parse(window.localStorage.getItem("sav"))
+        this.savs = JSON.parse(window.localStorage.getItem("sav"));
 
         if (!(this.savs instanceof Map)) {
             this.savs = new Map<number, VariableData>();
@@ -26,7 +26,7 @@ export class WebSaveManager implements SaveManager {
     backup() {
         const str = JSON.stringify(this.savs, null, 2);
         const blob = new Blob([str], {
-            type: "text/plain;charset=utf-8"
+            type: "text/plain;charset=utf-8",
         });
         saveAs(blob, "eraym_sav.json");
     }

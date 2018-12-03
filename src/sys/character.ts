@@ -17,7 +17,6 @@ export enum CharacterEventType {
     TrainFirst,
 }
 
-
 export class Character {
     name: string;
     callName: string;
