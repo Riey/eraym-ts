@@ -58,17 +58,17 @@ export function exitNever(): ExitPred {
     return () => false;
 }
 
-export async function getValidInput(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, buttons: Array<ButtonText>): Promise<InputResponse | null> {
+export async function getValidInput(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, buttons: ButtonText[]): Promise<InputResponse | null> {
     const startTime = Date.now();
 
-    buttons.forEach(btn => {
+    buttons.forEach((btn) => {
         btn.printTo(ctx);
     });
 
     while (!exitPred(ctx, startTime)) {
         const input = await ctx.console.wait(req);
 
-        for (let btn of buttons) {
+        for (const btn of buttons) {
             if (btn.enabled && btn.value === input) {
                 return input;
             }
@@ -92,15 +92,14 @@ export class InputMatch extends ButtonText {
     }
 }
 
-
-export async function matchInput(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, matches: Array<InputMatch>): Promise<boolean> {
+export async function matchInput(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, matches: InputMatch[]): Promise<boolean> {
     const input = await getValidInput(ctx, req, failedAction, exitPred, matches);
 
     if (input === null) {
         return false;
     }
 
-    for (let match of matches) {
+    for (const match of matches) {
         if (match.value === input) {
             await match.func(ctx, input);
             return true;

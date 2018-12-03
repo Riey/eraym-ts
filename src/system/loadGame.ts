@@ -1,10 +1,10 @@
 import {SystemFunctionType, YmContext} from "../sys/base";
-import {getValidInputPage} from "../sys/inputPage";
-import {ButtonText, failMessage} from "../sys/input";
 import {SAVE_MANAGER} from "../sys/env";
+import {ButtonText, failMessage} from "../sys/input";
+import {getValidInputPage} from "../sys/inputPage";
 
-import {VariableData} from "../sys/variable";
 import leftPad = require("left-pad");
+import {VariableData} from "../sys/variable";
 
 function makeSaveButton(no: number): ButtonText {
     if (SAVE_MANAGER.has_sav(no)) {

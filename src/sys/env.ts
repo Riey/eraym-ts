@@ -18,7 +18,7 @@ function getSaveManager(): SaveManager {
         case EraEnv.Web:
             return new WebSaveManager();
         default:
-            throw "unimplemented!";
+            throw new Error("unimplemented!");
     }
 }
 

@@ -1,7 +1,6 @@
 import {EraConsole, EraContext} from "erats";
-import {VariableData} from "./variable";
 import {systemTitle} from "../system/title";
-
+import {VariableData} from "./variable";
 
 export function saveSav(varData: VariableData): string {
     return JSON.stringify(varData);
@@ -25,7 +24,6 @@ export class YmContext implements EraContext<VariableData> {
         this.beginType = null;
         this.systemFunctions = systemFunctions;
     }
-
 
     begin(type: SystemFunctionType) {
         this.beginType = type;
@@ -57,4 +55,3 @@ export enum SystemFunctionType {
     Train,
     TrainEnd,
 }
-

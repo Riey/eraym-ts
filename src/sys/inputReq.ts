@@ -5,5 +5,5 @@ export function reqInt(): InputRequest {
         type: InputRequestType.Int,
         data: null,
         expire: null,
-    }
+    };
 }
