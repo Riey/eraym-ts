@@ -1,8 +1,8 @@
-import {ButtonText, FailedAction, getValidInput} from "./input";
-import {YmContext} from "./base";
 import {ConsoleLineAlignment} from "erats";
-import {printWithColorOnceCond} from "./print";
+import {YmContext} from "./base";
+import {ButtonText, FailedAction, getValidInput} from "./input";
 import {reqInt} from "./inputReq";
+import {printWithColorOnceCond} from "./print";
 
 export enum PageMethod {
     Prev,
@@ -51,7 +51,7 @@ export class SimplePageHandler implements PageHandler {
             default: return null;
         }
     }
-};
+}
 
 const DEFAULT_PAGE_HANDLER = new SimplePageHandler(9999, 10000, 10001);
 const DEFAULT_PAGE_SIZE = 20;
@@ -63,7 +63,7 @@ export async function getValidInputPage(ctx: YmContext, start: number, min: numb
     let pageNo = start;
     pageSize = pageSize || DEFAULT_PAGE_SIZE;
 
-    while(true) {
+    while (true) {
         const from = pageNo * pageSize;
         const to = from + pageSize;
 

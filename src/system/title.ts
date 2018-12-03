@@ -1,5 +1,5 @@
-import {SystemFunctionType, YmContext} from "../sys/base";
 import {ConsoleLineAlignment} from "erats";
+import {SystemFunctionType, YmContext} from "../sys/base";
 import {exitNever, failMessage, InputMatch, matchInput} from "../sys/input";
 import {reqInt} from "../sys/inputReq";
 
@@ -11,7 +11,7 @@ export async function systemTitle(ctx: YmContext) {
     ctx.console.printLine(`(${ctx.varData.gameBase.year})`);
     ctx.console.printLine(``);
     ctx.console.printLine(`${ctx.varData.gameBase.info}`);
-    ctx.console.printLine('「노예를 괴롭혀주세요…… 노예를 아껴주세요」');
+    ctx.console.printLine("「노예를 괴롭혀주세요…… 노예를 아껴주세요」");
 
     ctx.console.setLineAlignment(ConsoleLineAlignment.Left);
     ctx.console.drawLine();
@@ -28,6 +28,6 @@ export async function systemTitle(ctx: YmContext) {
             new InputMatch("[1] 불러오기", async (ctx) => {
                 ctx.begin(SystemFunctionType.Load);
             }),
-        ]
+        ],
     );
 }

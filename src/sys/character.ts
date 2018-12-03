@@ -8,7 +8,6 @@ export class Talent {
     sex: Sex;
 }
 
-
 export class Character {
     name: string;
     callName: string;
