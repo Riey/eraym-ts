@@ -1,11 +1,12 @@
 import saveAs from 'file-saver'
-import {VariableData, YmContext} from "./base";
+import {YmContext} from "./base";
+import {VariableData} from "./variable";
 
 export interface SaveManager {
     backup();
     restore();
-    save(ctx: YmContext, no: number);
-    load(ctx: YmContext, no: number): boolean;
+    save(varData: VariableData, no: number);
+    load(no: number): VariableData | null;
     has_sav(no: number): boolean;
 }
 
@@ -15,6 +16,11 @@ export class WebSaveManager implements SaveManager {
 
     constructor() {
         this.savs = JSON.parse(window.localStorage.getItem("sav"))
+
+        if (!(this.savs instanceof Map)) {
+            this.savs = new Map<number, VariableData>();
+            window.localStorage.setItem("sav", JSON.stringify(this.savs));
+        }
     }
 
     backup() {
@@ -29,15 +35,19 @@ export class WebSaveManager implements SaveManager {
         return this.savs.has(no);
     }
 
-    load(ctx: YmContext, no: number): boolean {
-        const variable = this.savs.get(no);
+    load(no: number): VariableData | null {
+        const dat = this.savs[no];
 
-        if (variable === undefined) {
-            return false;
+        if (dat === undefined) {
+            return null;
+        } else {
+            return dat;
         }
+    }
 
-        ctx.varData = variable;
-        return true;
+    save(varData: VariableData, no: number) {
+        this.savs[no] = varData;
+        window.localStorage.setItem("sav", JSON.stringify(this.savs));
     }
 
     restore() {
@@ -57,10 +67,6 @@ export class WebSaveManager implements SaveManager {
 
         const savs = fileReader.result as string;
         this.savs = JSON.parse(savs);
-    }
-
-    save(ctx: YmContext, no: number) {
-        this.savs[no] = ctx.varData;
     }
 
 }

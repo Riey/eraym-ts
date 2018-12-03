@@ -1,27 +1,7 @@
-import {EraContext} from "erats";
-import {GameBase} from "./gameBase";
+import {EraConsole, EraContext} from "erats";
+import {VariableData} from "./variable";
+import {systemTitle} from "../system/title";
 
-export class Character {
-
-}
-
-export class Money {
-    current: number;
-    goal: number;
-}
-
-export class Day {
-    current: number;
-    end: number | null;
-}
-
-export class VariableData {
-    characters: Array<Character>;
-    day: Day;
-    date: Date;
-    money: Money;
-    gameBase: GameBase;
-}
 
 export function saveSav(varData: VariableData): string {
     return JSON.stringify(varData);
@@ -31,4 +11,50 @@ export function loadSav(sav: string): VariableData {
     return JSON.parse(sav);
 }
 
-export type YmContext = EraContext<VariableData>;
+export type SystemFunction = (ctx: YmContext) => Promise<void>;
+
+export class YmContext implements EraContext<VariableData> {
+    beginType: SystemFunctionType | null;
+    systemFunctions: Map<SystemFunctionType, SystemFunction>;
+    console: EraConsole;
+    varData: VariableData;
+
+    constructor(console: EraConsole, varData: VariableData, systemFunctions: Map<SystemFunctionType, SystemFunction>) {
+        this.console = console;
+        this.varData = varData;
+        this.beginType = null;
+        this.systemFunctions = systemFunctions;
+    }
+
+
+    begin(type: SystemFunctionType) {
+        this.beginType = type;
+    }
+
+    async start() {
+        this.begin(SystemFunctionType.Title);
+
+        while (this.beginType !== null) {
+
+            const systemFunction = this.systemFunctions.get(this.beginType);
+
+            if (systemFunction === undefined) {
+                return;
+            }
+
+            this.beginType = null;
+
+            await systemFunction(this);
+        }
+    }
+}
+
+export enum SystemFunctionType {
+    Title,
+    Load,
+    First,
+    Shop,
+    Train,
+    TrainEnd,
+}
+

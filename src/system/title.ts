@@ -1,12 +1,9 @@
-import {YmContext} from "../sys/base";
-import {ConsoleLineAlignment, InputRequestType} from "erats";
+import {SystemFunctionType, YmContext} from "../sys/base";
+import {ConsoleLineAlignment} from "erats";
 import {exitNever, failMessage, InputMatch, matchInput} from "../sys/input";
-import {newGame} from "./newgame";
-import {loadGame} from "./loadGame";
 import {reqInt} from "../sys/inputReq";
 
 export async function systemTitle(ctx: YmContext) {
-
     ctx.console.setLineAlignment(ConsoleLineAlignment.Center);
     ctx.console.printLine(`${ctx.varData.gameBase.title}`);
     ctx.console.printLine(`v${ctx.varData.gameBase.version / 1000}`);
@@ -25,8 +22,12 @@ export async function systemTitle(ctx: YmContext) {
         failMessage("잘못된 입력입니다"),
         exitNever(),
         [
-            new InputMatch("[0] 힘세고 강한 시작", newGame),
-            new InputMatch("[1] 불러오기", loadGame),
+            new InputMatch("[0] 힘세고 강한 시작", async (ctx) => {
+                ctx.begin(SystemFunctionType.First);
+            }),
+            new InputMatch("[1] 불러오기", async (ctx) => {
+                ctx.begin(SystemFunctionType.Load);
+            }),
         ]
     );
 }

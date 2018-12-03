@@ -1,5 +1,4 @@
 import {loadContext} from "./sys/loader";
-import {systemTitle} from "./system/title";
 
 window.addEventListener("load", async () => {
 
@@ -18,5 +17,5 @@ window.addEventListener("load", async () => {
     ctx.console.setHlColor("yellow");
     ctx.console.fontSize = "2rem";
 
-    await systemTitle(ctx);
+    await ctx.start();
 });

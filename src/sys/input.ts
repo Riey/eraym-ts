@@ -1,5 +1,5 @@
-import {InputRequest, InputResponse} from "erats";
-import {YmContext} from "./base";
+import {EraContext, InputRequest, InputResponse} from "erats";
+import {printWithColorOnceCond} from "./print";
 
 function parseInput(text: string): InputResponse | null {
     const left = text.indexOf("[");
@@ -28,18 +28,22 @@ function parseInput(text: string): InputResponse | null {
 export class ButtonText {
     text: string;
     value: InputResponse;
-    color: (YmContext, boolean) => string | null;
-    check: (YmContext) => boolean;
+    color: string | null;
+    enabled: boolean;
 
-    constructor(text: string, value?: InputResponse, color?: (YmContext, boolean) => string | null, check?: (YmContext) => boolean) {
+    constructor(text: string, value?: InputResponse, color?: string, enabled?: boolean) {
         this.text = text;
         this.value = value || parseInput(text);
-        this.color = color || (() => null);
-        this.check = check || (() => true);
+        this.color = color || null;
+        this.enabled = enabled || true;
+    }
+
+    printTo(ctx: EraContext) {
+        printWithColorOnceCond(ctx, this.text, this.color, this.color !== null, true, this.value);
     }
 }
 
-export type FailedAction = (ctx: YmContext, fail: InputResponse) => boolean;
+export type FailedAction = (ctx: EraContext, fail: InputResponse) => boolean;
 
 export function failMessage(msg: string): FailedAction {
     return (ctx, fail) => {
@@ -48,37 +52,24 @@ export function failMessage(msg: string): FailedAction {
     };
 }
 
-export type ExitPred = (ctx: YmContext, startTime: number) => boolean;
+export type ExitPred = (ctx: EraContext, startTime: number) => boolean;
 
 export function exitNever(): ExitPred {
     return () => false;
 }
 
-export async function getValidInput(ctx: YmContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, buttons: Array<ButtonText>): Promise<InputResponse | null> {
+export async function getValidInput(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, buttons: Array<ButtonText>): Promise<InputResponse | null> {
     const startTime = Date.now();
-    const firstColor = ctx.console.getColor();
 
     buttons.forEach(btn => {
-        const check = btn.check(ctx);
-        const color = btn.color(ctx, check);
-
-        if (color !== null) {
-            ctx.console.setColor(color);
-        }
-
-        ctx.console.printBtn(btn.text, btn.value);
-        ctx.console.newLine();
-
-        if (color !== null) {
-            ctx.console.setColor(firstColor);
-        }
+        btn.printTo(ctx);
     });
 
     while (!exitPred(ctx, startTime)) {
         const input = await ctx.console.wait(req);
 
         for (let btn of buttons) {
-            if (btn.check(ctx) && btn.value === input) {
+            if (btn.enabled && btn.value === input) {
                 return input;
             }
         }
@@ -86,6 +77,7 @@ export async function getValidInput(ctx: YmContext, req: InputRequest, failedAct
         if (failedAction(ctx, input)) {
             return input;
         }
+
     }
 }
 
@@ -93,15 +85,15 @@ export class InputMatch extends ButtonText {
     func: (YmContext, InputResponse) => Promise<void>;
 
     constructor(text: string, func: (YmContext, InputResponse) => Promise<void>,
-                value?: InputResponse, color?: (YmContext, boolean) => string | null, check?: (YmContext) => boolean) {
-        super(text, value, color, check);
+                value?: InputResponse, color?: string, enabled?: boolean) {
+        super(text, value, color, enabled);
 
         this.func = func;
     }
 }
 
 
-export async function matchInput(ctx: YmContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, matches: Array<InputMatch>): Promise<boolean> {
+export async function matchInput(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, matches: Array<InputMatch>): Promise<boolean> {
     const input = await getValidInput(ctx, req, failedAction, exitPred, matches);
 
     if (input === null) {
