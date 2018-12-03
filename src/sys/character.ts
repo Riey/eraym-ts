@@ -4,8 +4,17 @@ export const enum Sex {
     Futa = 0b11,
 }
 
-export class Talent {
+export class Abl {
+    technique: number;
+}
+
+export interface Talent {
     sex: Sex;
+
+}
+
+export enum CharacterEventType {
+    TrainFirst,
 }
 
 
@@ -14,4 +23,18 @@ export class Character {
     callName: string;
     nickName: string;
     talent: Talent;
+    abl: Abl;
+
+    getNo(): number | null {
+        return null;
+    }
+
+    doEvent(type: CharacterEventType) {
+        switch (type) {
+            case CharacterEventType.TrainFirst: {
+                //범용 조교시작 구상
+                break;
+            }
+        }
+    }
 }

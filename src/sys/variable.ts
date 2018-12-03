@@ -1,12 +1,13 @@
 import {GameBase} from "./gameBase";
 import {Character} from "./character";
 
-export class Money {
+export interface Money {
     current: number;
     goal: number;
 }
 
-export class Day {
+export interface Day {
+    week: number;
     current: number;
     end: number | null;
 }
@@ -19,23 +20,43 @@ export enum Difficulty {
     Phantasm = 4,
 }
 
-export class Flag {
-    difficulty: Difficulty;
+export enum GameMode {
+    Ym = 0,
+    AbNormal = 1,
+    Prostitute = 4,
+    Extra = 9,
 }
 
-export class SaveInfo {
+export interface Flag {
+    difficulty: Difficulty;
+    gameMode: GameMode;
+}
+
+export interface SaveInfo {
     description: string;
     date: Date;
 }
 
+export interface House {
+    capacity: number;
+}
+
+export interface Item {
+    videoCamera: boolean;
+    videoTape: number;
+}
+
 export class VariableData {
     saveInfo: SaveInfo;
+    gameBase: GameBase;
 
     characters: Character[];
     day: Day;
     date: Date;
     money: Money;
-    gameBase: GameBase;
+    house: House;
+    flag: Flag;
+    item: Item;
 
     master: number;
     target: number | null;
@@ -45,18 +66,6 @@ export class VariableData {
         this.gameBase = gameBase;
 
         this.characters = [];
-        this.money = {
-            current: 0,
-            goal: 0,
-        };
-        this.day = {
-            current: 0,
-            end: 0,
-        };
-        this.saveInfo = {
-            date: new Date(),
-            description: "",
-        };
         this.assi = null;
         this.master = 0;
         this.target = null;
