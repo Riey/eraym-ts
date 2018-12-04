@@ -52,13 +52,17 @@ export function failMessage(msg: string): FailedAction {
     };
 }
 
+export function failDoNothing(): FailedAction {
+    return () => false;
+}
+
 export type ExitPred = (ctx: EraContext, startTime: number) => boolean;
 
 export function exitNever(): ExitPred {
     return () => false;
 }
 
-export async function getValidInput(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, buttons: ButtonText[]): Promise<InputResponse | null> {
+export async function getValidInput(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, buttons: ButtonText[]): Promise<InputResponse> {
     const startTime = Date.now();
 
     buttons.forEach((btn) => {
@@ -79,32 +83,29 @@ export async function getValidInput(ctx: EraContext, req: InputRequest, failedAc
         }
 
     }
+
+    throw new Error("input exited");
 }
 
-export class InputMatch extends ButtonText {
-    func: (YmContext, InputResponse) => Promise<void>;
+export class InputMatch<T> extends ButtonText {
+    matchValue: T;
 
-    constructor(text: string, func: (YmContext, InputResponse) => Promise<void>,
+    constructor(text: string, matchValue: T,
                 value?: InputResponse, color?: string, enabled?: boolean) {
         super(text, value, color, enabled);
 
-        this.func = func;
+        this.matchValue = matchValue;
     }
 }
 
-export async function matchInput(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, matches: InputMatch[]): Promise<boolean> {
+export async function matchInput<T>(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, matches: InputMatch<T>[]): Promise<T> {
     const input = await getValidInput(ctx, req, failedAction, exitPred, matches);
-
-    if (input === null) {
-        return false;
-    }
 
     for (const match of matches) {
         if (match.value === input) {
-            await match.func(ctx, input);
-            return true;
+            return match.matchValue;
         }
     }
 
-    return false;
+    throw new Error("not found matched value");
 }

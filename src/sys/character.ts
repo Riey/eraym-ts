@@ -31,7 +31,7 @@ export class Character {
     doEvent(type: CharacterEventType) {
         switch (type) {
             case CharacterEventType.TrainFirst: {
-                //범용 조교시작 구상
+                // 범용 조교시작 구상
                 break;
             }
         }

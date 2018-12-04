@@ -7,3 +7,11 @@ export function reqInt(): InputRequest {
         expire: null,
     };
 }
+
+export function reqAnyKey(): InputRequest {
+    return {
+        type: InputRequestType.AnyKey,
+        data: null,
+        expire: null,
+    };
+}
