@@ -1,6 +1,6 @@
 import {ConsoleLineAlignment} from "erats";
 import {SystemFunctionType, YmContext} from "../sys/base";
-import {ButtonText, exitNever, failMessage, getValidInput} from "../sys/input";
+import {exitNever, failMessage, InputMatch, matchInput} from "../sys/input";
 import {reqInt} from "../sys/inputReq";
 
 export async function systemTitle(ctx: YmContext) {
@@ -16,20 +16,16 @@ export async function systemTitle(ctx: YmContext) {
     ctx.console.setLineAlignment(ConsoleLineAlignment.Left);
     ctx.console.drawLine();
 
-    const input = await getValidInput(
+    const beginType = await matchInput(
         ctx,
         reqInt(),
         failMessage("잘못된 입력입니다"),
         exitNever(),
         [
-            new ButtonText("[0] 힘세고 강한 시작"),
-            new ButtonText("[1] 불러오기"),
+            new InputMatch("[0] 힘세고 강한 시작", SystemFunctionType.First),
+            new InputMatch("[1] 불러오기", SystemFunctionType.Load),
         ],
     );
 
-    if (input === 1) {
-        ctx.begin(SystemFunctionType.Load);
-    } else {
-        ctx.begin(SystemFunctionType.First);
-    }
+    ctx.begin(beginType);
 }
