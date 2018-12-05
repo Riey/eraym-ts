@@ -1,10 +1,22 @@
 import {Anata} from "../characters/anata";
 import {YmContext} from "../sys/base";
+import {Sex} from "../sys/character";
 import {exitNever, failDoNothing, failMessage, InputMatch, matchInput} from "../sys/input";
 import {reqAnyKey, reqInt} from "../sys/inputReq";
 import {Difficulty, GameMode} from "../sys/variable";
 
 export async function setMasterSex(ctx: YmContext) {
+    ctx.console.printLine("너의 성별은?");
+
+    const sex = await matchInput(ctx, reqInt(), failDoNothing(), exitNever(), [
+        new InputMatch("[0] ♂", Sex.Male),
+        new InputMatch("[1] ♀", Sex.Female),
+        new InputMatch("[2] 후타나리", Sex.Futa, null, ctx.varData.getMaster().talent.forbiddenKnowledge ? "gray" : undefined),
+    ]);
+
+    ctx.varData.getMaster().setSex(sex);
+
+    // TODO: 체형, 성벽, 경험, 가슴크기 선택
     throw new Error("not implemented!");
 }
 
@@ -71,6 +83,10 @@ export async function selectGameMode(ctx: YmContext) {
 
 export async function selectDifficulty(ctx: YmContext) {
     ctx.console.drawLine();
+    ctx.console.printLine("★★ 난이도를 선택하세요 ★★");
+    ctx.console.newLine();
+    ctx.console.drawLine();
+
 }
 
 export async function newGame(ctx: YmContext) {
@@ -110,4 +126,6 @@ export async function newGame(ctx: YmContext) {
         ctx.varData.item.videoTape = 1;
         // TODO: 조합지식과 매혹 습득
     }
+
+    throw new Error("not implemented!");
 }

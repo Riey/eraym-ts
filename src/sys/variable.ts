@@ -69,6 +69,13 @@ export class VariableData {
         this.assi = null;
         this.master = 0;
         this.target = null;
+
+        this.day = {} as Day;
+        this.date = {} as Date;
+        this.money = {} as Money;
+        this.house = {} as House;
+        this.flag = {} as Flag;
+        this.item = {} as Item;
     }
 
     getMaster(): Character | undefined {

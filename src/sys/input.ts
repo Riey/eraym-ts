@@ -1,5 +1,5 @@
 import {EraContext, InputRequest, InputResponse} from "erats";
-import {printWithColorOnceCond} from "./print";
+import {printWithColorOnce, printWithColorOnceCond} from "./print";
 
 function parseInput(text: string): InputResponse | null {
     const left = text.indexOf("[");
@@ -28,18 +28,27 @@ function parseInput(text: string): InputResponse | null {
 export class ButtonText {
     text: string;
     value: InputResponse;
-    color: string | null;
-    enabled: boolean;
+    color: string | undefined;
+    disabledColor: string | undefined;
 
-    constructor(text: string, value?: InputResponse, color?: string, enabled?: boolean) {
+    constructor(text: string, value?: InputResponse, color?: string, disabledColor?: string | null) {
         this.text = text;
         this.value = value || parseInput(text);
-        this.color = color || null;
-        this.enabled = enabled || true;
+        this.color = color;
+
+        if (disabledColor === null) {
+            disabledColor = "gray";
+        }
+
+        this.disabledColor = disabledColor;
     }
 
     printTo(ctx: EraContext) {
-        printWithColorOnceCond(ctx, this.text, this.color, this.color !== null, true, this.value);
+        if (this.disabledColor !== undefined) {
+            printWithColorOnce(ctx, this.text, this.disabledColor, true, this.value);
+        } else {
+            printWithColorOnceCond(ctx, this.text, this.color, this.color !== undefined, true, this.value);
+        }
     }
 }
 
@@ -73,7 +82,7 @@ export async function getValidInput(ctx: EraContext, req: InputRequest, failedAc
         const input = await ctx.console.wait(req);
 
         for (const btn of buttons) {
-            if (btn.enabled && btn.value === input) {
+            if (btn.disabledColor === undefined && btn.value === input) {
                 return input;
             }
         }
@@ -91,14 +100,14 @@ export class InputMatch<T> extends ButtonText {
     matchValue: T;
 
     constructor(text: string, matchValue: T,
-                value?: InputResponse, color?: string, enabled?: boolean) {
-        super(text, value, color, enabled);
+                value?: InputResponse, color?: string, disabled_color?: string) {
+        super(text, value, color, disabled_color);
 
         this.matchValue = matchValue;
     }
 }
 
-export async function matchInput<T>(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, matches: InputMatch<T>[]): Promise<T> {
+export async function matchInput<T>(ctx: EraContext, req: InputRequest, failedAction: FailedAction, exitPred: ExitPred, matches: Array<InputMatch<T>>): Promise<T> {
     const input = await getValidInput(ctx, req, failedAction, exitPred, matches);
 
     for (const match of matches) {
